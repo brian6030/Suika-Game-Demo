@@ -17,6 +17,8 @@ public class SpawnObject : MonoBehaviour
     Vector3 gravityDirection = new Vector3(0, -1, 0);
     [SerializeField] float forceMagnitude = 10.0f;
 
+    bool canSpawn = true;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,13 +29,15 @@ public class SpawnObject : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && canSpawn)
         {
             Rigidbody rb = launchObject.GetComponent<Rigidbody>();
             launchObject.transform.parent = null;
 
             rb.isKinematic = false;
             rb.AddForce(gravityDirection * forceMagnitude);
+
+            canSpawn = false;
 
             StartCoroutine(WaitForSpawn());
         }
@@ -42,14 +46,17 @@ public class SpawnObject : MonoBehaviour
     IEnumerator WaitForSpawn() 
     {
         yield return new WaitForSeconds(spawnInterval);
+
         SwapPosition();
         Spawn();
+
+        canSpawn = true;
     }
 
     void Spawn() 
     {
         float randomValue = Random.value; // From 0 - 1
-        Debug.Log(randomValue);
+        //Debug.Log(randomValue);
 
         for (int i = 0; i < spawnObjects.Length; i++) 
         {
